@@ -11,11 +11,11 @@ viewport::viewport(double minX, double maxX, double minY, double maxY, int pixel
 	this->maxX = maxX;
 	this->minY = minY;
 	this->maxY = maxY;
+	this->pixelMap = vector<vector<colour> >(pixelsHigh, vector<colour>(pixelsWide));
 }
 
 void viewport::render()
 {
-	vector<vector<colour> > pixelMap(pixelsHigh, vector<colour>(pixelsWide));
 	for(int i=0; i<pixelsHigh; ++i)
 	{
 		for(int j=0; j<pixelsWide; ++j)
@@ -107,12 +107,9 @@ void viewport::render()
 			pixelMap.at(i).at(j) = pixelColour;
 		}
 	}
-	//drawToTerminal(pixelMap);
-	drawToUnicode(pixelMap);
-	drawToPPM(pixelMap);
 }
 
-void viewport::drawToTerminal(vector<vector<colour> > pixelMap)
+void viewport::drawToTerminal()
 {
 	for(int i=0; i<pixelMap.size(); ++i)
 	{
@@ -125,7 +122,7 @@ void viewport::drawToTerminal(vector<vector<colour> > pixelMap)
 	cout << endl;
 }
 
-void viewport::drawToUnicode(vector<vector<colour> > pixelMap)
+void viewport::drawToUnicode()
 {
 	for(int i=0; i<pixelMap.size()-1; i+=2)
 	{
@@ -138,7 +135,7 @@ void viewport::drawToUnicode(vector<vector<colour> > pixelMap)
 	cout << endl;
 }
 
-void viewport::drawToPPM(vector<vector<colour> > pixelMap)
+void viewport::drawToPPM()
 {
 	ofstream outFile("test.ppm");
 	outFile << "P3" << endl;
