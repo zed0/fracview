@@ -33,6 +33,7 @@ void viewport::render()
 					double cb = y; //imaginary part
 					double za = ca;
 					double zb = cb;
+					double ztemp;
 
 					int itterations = 0;
 					int max = 1000;
@@ -41,12 +42,13 @@ void viewport::render()
 					{
 						++itterations;
 						//z(a+1) = z(a)^2+c
-						za = za*za - zb*zb + ca;
+						ztemp = za*za - zb*zb + ca;
 						zb = 2*za*zb + cb;
+						za = ztemp;
 					}
 					//cout << x << "," << y << ":" << za << "," << zb << ";";
 					colour currentColour;
-					if(sqrt(za*za + zb*zb) <= 4)
+					if(sqrt(za*za + zb*zb) <= 1)
 					{
 						currentColour = colour();
 					}
@@ -54,7 +56,46 @@ void viewport::render()
 					{
 						//currentColour = colour(255,255,255);
 						itterations*=100;
-						currentColour = colour(itterations,itterations-255,itterations-511);
+						itterations = itterations%1792;
+						int red = 0;
+						int green = 0;
+						int blue = 0;
+						if(itterations < 256)
+						{
+							red = itterations;
+						}
+						else if(itterations < 512)
+						{
+							red = 255;
+							green = itterations - 256;
+						}
+						else if(itterations < 768)
+						{
+							green = 255;
+							red = 768 - itterations;
+						}
+						else if(itterations < 1024)
+						{
+							green = 255;
+							blue = itterations - 768;
+						}
+						else if(itterations < 1280)
+						{
+							green = 1280 - itterations;
+							blue = 255;
+						}
+						else if(itterations < 1536)
+						{
+							red = itterations - 1280;
+							blue = 255;
+						}
+						else
+						{
+							red = 255;
+							green = itterations - 1536;
+							blue = 255;
+						}
+						currentColour = colour(red, green, blue);
 						//currentColour = colour((double(itterations)/double(max))*255,(double(itterations)/double(max))*255,(double(itterations)/double(max))*255);
 					}
 
