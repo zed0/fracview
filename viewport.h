@@ -13,14 +13,13 @@ using namespace std;
 class viewport
 {
 	public:
-		viewport(double newWidth=20, double newHeight=20, int newPixelsHigh=20, int newPixelsWide=20, int newAntialias=2);
+		viewport(double minX=-2, double maxX=2, double minY=-2, double maxY=2, int newPixelsHigh=20, int newPixelsWide=20, int newAntialias=2);
 		void render();
 		void drawToTerminal(vector<vector<colour> > pixelMap);
 		void drawToUnicode(vector<vector<colour> > pixelMap);
 		void drawToPPM(vector<vector<colour> > pixelMap);
 
-		double width;
-		double height;
+		double minX, maxX, minY, maxY;
 		int pixelsHigh;
 		int pixelsWide;
 		int antialias;

@@ -2,13 +2,15 @@
 
 using namespace std;
 
-viewport::viewport(double newWidth, double newHeight, int newPixelsHigh, int newPixelsWide, int newAntialias)
+viewport::viewport(double minX, double maxX, double minY, double maxY, int pixelsHigh, int pixelsWide, int antialias)
 {
-	width = newWidth;
-	height = newHeight;
-	pixelsHigh = newPixelsHigh;
-	pixelsWide = newPixelsWide;
-	antialias = newAntialias;
+	this->pixelsWide = pixelsWide;
+	this->pixelsHigh = pixelsHigh;
+	this->antialias = antialias;
+	this->minX = minX;
+	this->maxX = maxX;
+	this->minY = minY;
+	this->maxY = maxY;
 }
 
 void viewport::render()
@@ -23,16 +25,16 @@ void viewport::render()
 			{
 				for(int m=0; m<antialias; ++m)
 				{
-					double x = i-double(pixelsHigh)/2-0.5+double(antialias)/2+k/double(antialias);
-					x*=double(height)/pixelsHigh;
-					double y = j-double(pixelsWide)/2-0.5+double(antialias)/2+m/double(antialias);
-					y*=double(width)/pixelsWide;
+					double height = maxX - minX;
+					double x = minX + (i - 0.5+double(antialias)/2 + k/double(antialias))/pixelsHigh * height;
+					double width = maxY - minY;
+					double y = minY + (j - 0.5+double(antialias)/2 + m/double(antialias))/pixelsWide * width;
 					//cout << x << "," << y << ";";
 
 					double ca = x; //real part
 					double cb = y; //imaginary part
-					double za = ca;
-					double zb = cb;
+					double za = x;
+					double zb = y;
 					double ztemp;
 
 					int itterations = 0;
