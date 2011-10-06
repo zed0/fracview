@@ -7,13 +7,14 @@ using namespace std;
 
 int main(int argc, char* argv[])
 {
-	int pixelsHigh = 90;
-	int pixelsWide = 90;
+	int pixelsHigh = 80;
+	int pixelsWide = 80;
 	double minX = -2.5;
 	double maxX = 1.5;
 	double minY = -2;
 	double maxY = 2;
 	int antialiasing = 2;
+	double magnification = 1;
 	vector<string> args(argv, argv + argc);
 	for(int i=0; i<args.size(); ++i)
 	{
@@ -69,7 +70,8 @@ int main(int argc, char* argv[])
 		camera.render();
 		//drawToTerminal(pixelMap);
 		camera.drawToUnicode();
-		camera.drawToPPM();
+		cout << "Magnification: " << magnification << "; min x: " << minX << "; max x: " << maxX << "; min y: " << minY << "; max y: " << maxY << endl;
+		//camera.drawToPPM();
 		if(ch=cin.get())
 		{
 			if(ch == 'q')
@@ -109,6 +111,7 @@ int main(int argc, char* argv[])
 				double tempMinY = minY + (maxY-minY)/4;
 				maxY = maxY - (maxY-minY)/4;
 				minY = tempMinY;
+				magnification *= 2;
 			}
 			else if(ch == 'd')
 			{
@@ -118,6 +121,7 @@ int main(int argc, char* argv[])
 				double tempMinY = 3.0*minY/2.0 - maxY/2.0;
 				maxY = 3.0*maxY/2.0 - minY/2.0;
 				minY = tempMinY;
+				magnification /= 2;
 			}
 		}
 	}
