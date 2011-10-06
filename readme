@@ -3,6 +3,7 @@ A simple Mandlebrot generator for output in a UTF-8 terminal.
 Compile with: g++ *.cpp -o fracview
 
 Todo:
-zoom
+selectable colourmaps
 controls
 optimizations
+increased precision

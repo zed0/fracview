@@ -24,6 +24,7 @@ int main(int argc, char* argv[])
 			cout << "Keys:" << endl;
 			cout << "h,j,k,l: scroll left, down, up, right." << endl;
 			cout << "u,d: zoom in, out." << endl;
+			cout << "p: print to file, supports any output format supported by imagemagick." << endl;
 			cout << "q: quit." << endl;
 			return 0;
 		}
@@ -64,14 +65,16 @@ int main(int argc, char* argv[])
 	tcsetattr (STDIN_FILENO, TCSANOW, &after); // Set the modified flags
 
 	char ch;
+	//cout << "\033[s";
 	while(true)
 	{
 		viewport camera(minX, maxX, minY, maxY, pixelsHigh, pixelsWide, antialiasing);
 		camera.render();
 		//drawToTerminal(pixelMap);
+		//cout << "\033[u";
+		cout << "\033[0;0H";
 		camera.drawToUnicode();
 		cout << "Magnification: " << magnification << "; min x: " << minX << "; max x: " << maxX << "; min y: " << minY << "; max y: " << maxY << endl;
-		//camera.drawToPPM();
 		if(ch=cin.get())
 		{
 			if(ch == 'q')
@@ -122,6 +125,24 @@ int main(int argc, char* argv[])
 				maxY = 3.0*maxY/2.0 - minY/2.0;
 				minY = tempMinY;
 				magnification /= 2;
+			}
+			else if(ch == 'p')
+			{
+				string filename = "fracview.png";
+				int resX = 200;
+				int resY = 200;
+				tcsetattr (STDIN_FILENO, TCSANOW, &before);
+				cout << "Enter filename (fracview.png):";
+				cin >> filename;
+				cout << "Enter x resolution (800):";
+				cin >> resX;
+				cout << "Enter y resolution (800):";
+				cin >> resY;
+				tcsetattr (STDIN_FILENO, TCSANOW, &after);
+				viewport camera(minX, maxX, minY, maxY, resX, resY, antialiasing);
+				camera.render();
+				camera.drawToFile(filename);
+				cin.ignore(); //clear the input buffer
 			}
 		}
 	}

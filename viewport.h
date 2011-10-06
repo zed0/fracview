@@ -6,6 +6,7 @@
 #include <vector>
 #include <string>
 #include <fstream>
+#include "stringUtils.h"
 #include "colour.h"
 
 using namespace std;
@@ -18,6 +19,7 @@ class viewport
 		void drawToTerminal();
 		void drawToUnicode();
 		void drawToPPM();
+		void drawToFile(string filename);
 
 		vector<vector<colour> > pixelMap;
 		double minX, maxX, minY, maxY;

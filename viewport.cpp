@@ -157,3 +157,27 @@ void viewport::drawToPPM()
 	}
 	outFile.close();
 }
+
+void viewport::drawToFile(string filename)
+{
+	using stringUtils::toString;
+	FILE* output = popen(("convert ppm:- " + filename).c_str(), "w");
+	fprintf(output, "P3\n");
+	fprintf(output, "%i %i\n", pixelMap.size(), pixelMap.at(0).size());
+	fprintf(output, "255");
+	for(int i=0; i<pixelMap.size(); ++i)
+	{
+		for(int j=0; j<pixelMap.at(i).size(); ++j)
+		{
+			if(j%5 == 0)
+			{
+				fprintf(output, "\n");
+			}
+			fprintf(output, " %i", pixelMap.at(i).at(j).R);
+			fprintf(output, " %i", pixelMap.at(i).at(j).G);
+			fprintf(output, " %i", pixelMap.at(i).at(j).B);
+		}
+		fprintf(output, "\n");
+	}
+	pclose(output);
+}
