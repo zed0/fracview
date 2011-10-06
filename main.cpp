@@ -71,7 +71,7 @@ int main(int argc, char* argv[])
 		viewport camera(minX, maxX, minY, maxY, pixelsHigh, pixelsWide, antialiasing);
 		camera.render();
 		//drawToTerminal(pixelMap);
-		//cout << "\033[u";
+		cout << "\033[u";
 		cout << "\033[0;0H";
 		camera.drawToUnicode();
 		cout << "Magnification: " << magnification << "; min x: " << minX << "; max x: " << maxX << "; min y: " << minY << "; max y: " << maxY << endl;

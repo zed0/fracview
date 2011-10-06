@@ -40,17 +40,15 @@ void viewport::render()
 					int itterations = 0;
 					int max = 1000;
 
-					while(sqrt(za*za + zb*zb) <= 4 && itterations <= max)
+					while(za*za + zb*zb <= 4 && itterations <= max)
 					{
 						++itterations;
-						//z(a+1) = z(a)^2+c
 						ztemp = za*za - zb*zb + ca;
 						zb = 2*za*zb + cb;
 						za = ztemp;
 					}
-					//cout << x << "," << y << ":" << za << "," << zb << ";";
 					colour currentColour;
-					if(sqrt(za*za + zb*zb) <= 1)
+					if(za*za + zb*zb <= 4)
 					{
 						currentColour = colour();
 					}
