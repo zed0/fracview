@@ -2,7 +2,7 @@
 
 using namespace std;
 
-viewport::viewport(double minX, double maxX, double minY, double maxY, int pixelsHigh, int pixelsWide, int antialias)
+viewport::viewport(double minX, double maxX, double minY, double maxY, int pixelsHigh, int pixelsWide, int antialias, double colourScale)
 {
 	this->pixelsWide = pixelsWide;
 	this->pixelsHigh = pixelsHigh;
@@ -11,6 +11,7 @@ viewport::viewport(double minX, double maxX, double minY, double maxY, int pixel
 	this->maxX = maxX;
 	this->minY = minY;
 	this->maxY = maxY;
+	this->colourScale = colourScale;
 	this->pixelMap = vector<vector<colour> >(pixelsHigh, vector<colour>(pixelsWide));
 }
 
@@ -55,7 +56,7 @@ void viewport::render()
 					else
 					{
 						//currentColour = colour(255,255,255);
-						itterations*=100;
+						itterations*=colourScale;
 						itterations = itterations%1792;
 						int red = 0;
 						int green = 0;

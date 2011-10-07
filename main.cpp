@@ -15,6 +15,7 @@ int main(int argc, char* argv[])
 	double maxY = 2;
 	int antialiasing = 2;
 	double magnification = 1;
+	double colourScale = 128;
 	vector<string> args(argv, argv + argc);
 	for(int i=0; i<args.size(); ++i)
 	{
@@ -24,6 +25,7 @@ int main(int argc, char* argv[])
 			cout << "Keys:" << endl;
 			cout << "h,j,k,l: scroll left, down, up, right." << endl;
 			cout << "u,d: zoom in, out." << endl;
+			cout << "n,m: colour scale up, down." << endl;
 			cout << "p: print to file, supports any output format supported by imagemagick." << endl;
 			cout << "q: quit." << endl;
 			return 0;
@@ -68,13 +70,13 @@ int main(int argc, char* argv[])
 	//cout << "\033[s";
 	while(true)
 	{
-		viewport camera(minX, maxX, minY, maxY, pixelsHigh, pixelsWide, antialiasing);
+		viewport camera(minX, maxX, minY, maxY, pixelsHigh, pixelsWide, antialiasing, colourScale);
 		camera.render();
 		//drawToTerminal(pixelMap);
 		cout << "\033[u";
 		cout << "\033[0;0H";
 		camera.drawToUnicode();
-		cout << "Magnification: " << magnification << "; min x: " << minX << "; max x: " << maxX << "; min y: " << minY << "; max y: " << maxY << endl;
+		cout << "\033[2KMagnification: " << magnification << "; x: " << (minX + maxX)/2 << "; y: " << (minY + maxY)/2 << ";" << endl;
 		if(ch=cin.get())
 		{
 			if(ch == 'q')
@@ -126,6 +128,14 @@ int main(int argc, char* argv[])
 				minY = tempMinY;
 				magnification /= 2;
 			}
+			else if(ch == 'n')
+			{
+				colourScale *= 2;
+			}
+			else if(ch == 'm')
+			{
+				colourScale /= 2;
+			}
 			else if(ch == 'p')
 			{
 				string filename = "fracview.png";
@@ -139,7 +149,7 @@ int main(int argc, char* argv[])
 				cout << "Enter y resolution (800):";
 				cin >> resY;
 				tcsetattr (STDIN_FILENO, TCSANOW, &after);
-				viewport camera(minX, maxX, minY, maxY, resX, resY, antialiasing);
+				viewport camera(minX, maxX, minY, maxY, resX, resY, antialiasing, colourScale);
 				camera.render();
 				camera.drawToFile(filename);
 				cin.ignore(); //clear the input buffer
