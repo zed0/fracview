@@ -110,25 +110,48 @@ void viewport::render()
 
 void viewport::drawToTerminal()
 {
+	colour foreColour;
 	for(int i=0; i<pixelMap.size(); ++i)
 	{
 		for(int j=0; j<pixelMap.at(i).size(); ++j)
 		{
-			cout << "\033[48;05;" << pixelMap.at(i).at(j).toAnsi() << "m  \033[0m";
+			//don't output colour codes unless the colour has changed, significantly faster on old terminals.
+			if(pixelMap.at(i).at(j) != foreColour)
+			{
+				foreColour = pixelMap.at(i).at(j);
+				cout << "\033[48;05;" << foreColour.toAnsi() << "m";
+			}
+			cout << "  ";
 		}
-		cout << "\n";
+		foreColour=NULL;
+		cout << "\033[0m\n";
 	}
 	cout << endl;
 }
 
 void viewport::drawToUnicode()
 {
+	colour foreColour;
+	colour backColour;
 	for(int i=0; i<pixelMap.size()-1; i+=2)
 	{
 		for(int j=0; j<pixelMap.at(i).size(); ++j)
 		{
-			cout << "\033[48;05;" << pixelMap.at(i).at(j).toAnsi() << "m" << "\033[38;05;" << pixelMap.at(i+1).at(j).toAnsi() << "m▄";
+			//don't output colour codes unless the colour has changed, significantly faster on old terminals.
+			if(pixelMap.at(i).at(j) != foreColour)
+			{
+				foreColour = pixelMap.at(i).at(j);
+				cout << "\033[48;05;" << foreColour.toAnsi() << "m";
+			}
+			if(pixelMap.at(i+1).at(j) != backColour)
+			{
+				backColour = pixelMap.at(i+1).at(j);
+				cout << "\033[38;05;" << backColour.toAnsi() << "m";
+			}
+			cout << "▄";
 		}
+		foreColour=NULL;
+		backColour=NULL;
 		cout << "\033[0m\n";
 	}
 	cout << endl;

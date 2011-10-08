@@ -16,6 +16,8 @@ class colour
 		int A;
 		colour(int R=0, int G=0, int B=0, int A=255);
 		friend ostream& operator<< (ostream &out, colour &cPoint);
+		bool operator==(const colour &other) const;
+		bool operator!=(const colour &other) const;
 		int toAnsi();
 		colour add(colour target);
 		colour product(double target);

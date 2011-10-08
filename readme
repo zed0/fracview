@@ -4,6 +4,6 @@ Compile with: g++ *.cpp -o fracview
 
 Todo:
 selectable colourmaps
-controls
+multi threading
 optimizations
 increased precision

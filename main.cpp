@@ -21,7 +21,7 @@ int main(int argc, char* argv[])
 	{
 		if(args.at(i) == "--help")
 		{
-			cout << "Usage:" << args.at(0) << " [--min-x <min x>] [--max-x <max x>] [--min-y <min y>] [--max-y <max y>] [--antialiasing <antialiasing>]" << endl;
+			cout << "Usage:" << args.at(0) << " [--min-x <min x>] [--max-x <max x>] [--min-y <min y>] [--max-y <max y>] [--antialiasing <antialiasing>] [--width <pixels wide>] [--height <pixels high>]" << endl;
 			cout << "Keys:" << endl;
 			cout << "h,j,k,l: scroll left, down, up, right." << endl;
 			cout << "u,d: zoom in, out." << endl;
@@ -72,9 +72,9 @@ int main(int argc, char* argv[])
 	{
 		viewport camera(minX, maxX, minY, maxY, pixelsHigh, pixelsWide, antialiasing, colourScale);
 		camera.render();
-		//drawToTerminal(pixelMap);
 		cout << "\033[u";
 		cout << "\033[0;0H";
+		//camera.drawToTerminal();
 		camera.drawToUnicode();
 		cout << "\033[2KMagnification: " << magnification << "; x: " << (minX + maxX)/2 << "; y: " << (minY + maxY)/2 << ";" << endl;
 		if(ch=cin.get())

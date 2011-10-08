@@ -18,6 +18,20 @@ ostream& operator<< (ostream &out, colour &cPoint)
 	return out;
 }
 
+bool colour::operator==(const colour &other) const
+{
+	if(R != other.R) return false;
+	if(G != other.G) return false;
+	if(B != other.B) return false;
+	if(A != other.A) return false;
+	return true;
+}
+
+bool colour::operator!=(const colour &other) const
+{
+	return !(*this == other);
+}
+
 colour colour::add(colour target)
 {
 	return colour(R+target.R, G+target.G, B+target.B, A+target.A);
