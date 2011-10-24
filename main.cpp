@@ -21,11 +21,12 @@ int main(int argc, char* argv[])
 	int colourOffset = 0;
 	bool utf = true;
 	vector<string> args(argv, argv + argc);
+	string saveLocation = "";
 	for(int i=0; i<args.size(); ++i)
 	{
 		if(args.at(i) == "--help")
 		{
-			cout << "Usage:" << args.at(0) << " [--min-x <min x>] [--max-x <max x>] [--min-y <min y>] [--max-y <max y>] [--antialiasing <antialiasing>] [--width <pixels wide>] [--height <pixels high>] [--no-utf] [--k <k value>] [--theta <theta value>]" << endl;
+			cout << "Usage:" << args.at(0) << " [--min-x <min x>] [--max-x <max x>] [--min-y <min y>] [--max-y <max y>] [--antialiasing <antialiasing>] [--width <pixels wide>] [--height <pixels high>] [--no-utf] [--k <k value>] [--theta <theta value>] [--dir <save location>]" << endl;
 			cout << "Keys:" << endl;
 			cout << "h,j,k,l: scroll left, down, up, right." << endl;
 			cout << "u,d: zoom in, out." << endl;
@@ -74,6 +75,10 @@ int main(int argc, char* argv[])
 		if(args.at(i) == "--theta" && args.size() > i+1)
 		{
 			theta = stringUtils::fromString<double>(args.at(i+1));
+		}
+		if(args.at(i) == "--dir" && args.size() > i+1)
+		{
+			saveLocation = args.at(i+1);
 		}
 	}
 	termios before, after;
@@ -167,18 +172,33 @@ int main(int argc, char* argv[])
 			}
 			else if(ch == 'p')
 			{
-				string filename = "fracview.png";
-				int resX = 200;
-				int resY = 200;
+				string defaultFilename = saveLocation + "fracview.png";
+				string filename;
+				string defaultResX = "800";
+				string resX;
+				string defaultResY = "800";
+				string resY;
 				tcsetattr (STDIN_FILENO, TCSANOW, &before);
-				cout << "Enter filename (fracview.png):";
-				cin >> filename;
+				cout << "Enter filename (" << defaultFilename << "):";
+				getline(cin, filename);
+				if(filename.empty())
+				{
+					filename = defaultFilename;
+				}
 				cout << "Enter x resolution (800):";
-				cin >> resX;
+				getline(cin, resX);
+				if(resX.empty())
+				{
+					resX = defaultResX;
+				}
 				cout << "Enter y resolution (800):";
-				cin >> resY;
+				getline(cin, resY);
+				if(resY.empty())
+				{
+					resY = defaultResY;
+				}
 				tcsetattr (STDIN_FILENO, TCSANOW, &after);
-				viewport camera(minX, maxX, minY, maxY, stretch_k, theta, resX, resY, antialiasing, colourScale, colourOffset);
+				viewport camera(minX, maxX, minY, maxY, stretch_k, theta, stringUtils::fromString<int>(resX), stringUtils::fromString<int>(resY), antialiasing, colourScale, colourOffset);
 				camera.render();
 				camera.drawToFile(filename);
 				cin.ignore(); //clear the input buffer
