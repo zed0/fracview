@@ -2,7 +2,7 @@
 
 using namespace std;
 
-viewport::viewport(double minX, double maxX, double minY, double maxY, int pixelsHigh, int pixelsWide, int antialias, double colourScale)
+viewport::viewport(double minX, double maxX, double minY, double maxY, double stretch_k, double theta, int pixelsHigh, int pixelsWide, int antialias, double colourScale, int colourOffset)
 {
 	this->pixelsWide = pixelsWide;
 	this->pixelsHigh = pixelsHigh;
@@ -11,7 +11,10 @@ viewport::viewport(double minX, double maxX, double minY, double maxY, int pixel
 	this->maxX = maxX;
 	this->minY = minY;
 	this->maxY = maxY;
+	this->stretch_k = stretch_k;
+	this->theta = theta;
 	this->colourScale = colourScale;
+	this->colourOffset = colourOffset;
 	this->pixelMap = vector<vector<colour> >(pixelsHigh, vector<colour>(pixelsWide));
 }
 
@@ -37,16 +40,28 @@ void viewport::render()
 					double za = x;
 					double zb = y;
 					double ztemp;
+					double zx;
+					double zy;
 
 					int itterations = 0;
 					int max = 1000;
+					double s_theta = sin(theta);
+					double c_theta = cos(theta);
 
 					while(za*za + zb*zb <= 4 && itterations <= max)
 					{
 						++itterations;
+						zx = za*(s_theta*s_theta + stretch_k*c_theta*c_theta) + zb*(stretch_k - 1)*s_theta*c_theta;
+						zy = za*(stretch_k - 1)*s_theta*c_theta + zb*(stretch_k*s_theta*s_theta + c_theta*c_theta);
+						za = zx*zx - zy*zy + ca;
+						zb = 2*zx*zy + cb;
+
+						/*
 						ztemp = za*za - zb*zb + ca;
 						zb = 2*za*zb + cb;
 						za = ztemp;
+						*/
+
 					}
 					colour currentColour;
 					if(za*za + zb*zb <= 4)
@@ -56,7 +71,8 @@ void viewport::render()
 					else
 					{
 						//currentColour = colour(255,255,255);
-						itterations*=colourScale;
+						itterations *= colourScale;
+						itterations += colourOffset;
 						itterations = itterations%1792;
 						int red = 0;
 						int green = 0;
