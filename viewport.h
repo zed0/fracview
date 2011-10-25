@@ -14,7 +14,7 @@ using namespace std;
 class viewport
 {
 	public:
-		viewport(double minX=-2, double maxX=2, double minY=-2, double maxY=2, double stretch_k=1, double theta=0, int newPixelsHigh=20, int newPixelsWide=20, int newAntialias=2, double colourScale=128, int colourOffset=0);
+		viewport(double minX=-2, double maxX=2, double minY=-2, double maxY=2, double stretch_k=1, double theta=0, int newPixelsHigh=20, int newPixelsWide=20, int newAntialias=2, double colourScale=128, int colourOffset=0, int iterates=1000);
 		void render();
 		void drawToTerminal();
 		void drawToUnicode();
@@ -26,6 +26,7 @@ class viewport
 		int pixelsHigh;
 		int pixelsWide;
 		int antialias;
+		int iterates;
 		double colourScale;
 		int colourOffset;
 };
