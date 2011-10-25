@@ -23,6 +23,19 @@ void viewport::render()
 {
 	double s_theta = sin(theta);
 	double c_theta = cos(theta);
+	double ss_theta = s_theta*s_theta;
+	double sc_theta = s_theta*c_theta;
+	double cc_theta = c_theta*c_theta;
+	int max = iterates;
+	double L;
+	if (stretch_k >= 1)
+	{
+		L = 2;
+	}
+	else
+	{
+		L = 2/(stretch_k*stretch_k);
+	}
 	for(int i=0; i<pixelsWide; ++i)
 	{
 		for(int j=0; j<pixelsHigh; ++j)
@@ -47,23 +60,11 @@ void viewport::render()
 					double zy;
 
 					int itterations = 0;
-					int max = iterates;
-					double s_theta = sin(theta);
-					double c_theta = cos(theta);
-					double L;
-					if (stretch_k >= 1)
-					{
-						L = 2;
-					}
-					else
-					{
-						L = 2/(stretch_k*stretch_k);
-					}
 					while(za*za + zb*zb <= L*L && itterations <= max)
 					{
 						++itterations;
-						zx = za*(s_theta*s_theta + stretch_k*c_theta*c_theta) + zb*(stretch_k - 1)*s_theta*c_theta;
-						zy = za*(stretch_k - 1)*s_theta*c_theta + zb*(stretch_k*s_theta*s_theta + c_theta*c_theta);
+						zx = za*(ss_theta + stretch_k*cc_theta) + zb*(stretch_k - 1)*sc_theta;
+						zy = za*(stretch_k - 1)*sc_theta + zb*(stretch_k*ss_theta + cc_theta);
 						za = zx*zx - zy*zy + ca;
 						zb = 2*zx*zy + cb;
 
@@ -133,14 +134,14 @@ void viewport::render()
 void viewport::drawToTerminal()
 {
 	colour foreColour;
-	for(int i=0; i<pixelMap.size(); ++i)
+	for(int i=0; i<pixelMap.at(0).size(); ++i)
 	{
-		for(int j=0; j<pixelMap.at(i).size(); ++j)
+		for(int j=0; j<pixelMap.size(); ++j)
 		{
 			//don't output colour codes unless the colour has changed, significantly faster on old terminals.
-			if(pixelMap.at(i).at(j) != foreColour)
+			if(pixelMap.at(j).at(i) != foreColour)
 			{
-				foreColour = pixelMap.at(i).at(j);
+				foreColour = pixelMap.at(j).at(i);
 				cout << "\033[48;05;" << foreColour.toAnsi() << "m";
 			}
 			cout << "  ";
@@ -155,19 +156,19 @@ void viewport::drawToUnicode()
 {
 	colour foreColour;
 	colour backColour;
-	for(int i=0; i<pixelMap.size()-1; i+=2)
+	for(int i=0; i<pixelMap.at(0).size()-1; i+=2)
 	{
-		for(int j=0; j<pixelMap.at(0).size(); ++j)
+		for(int j=0; j<pixelMap.size(); ++j)
 		{
 			//don't output colour codes unless the colour has changed, significantly faster on old terminals.
-			if(pixelMap.at(i).at(j) != foreColour)
+			if(pixelMap.at(j).at(i) != foreColour)
 			{
-				foreColour = pixelMap.at(i).at(j);
+				foreColour = pixelMap.at(j).at(i);
 				cout << "\033[48;05;" << foreColour.toAnsi() << "m";
 			}
-			if(pixelMap.at(i+1).at(j) != backColour)
+			if(pixelMap.at(j).at(i+1) != backColour)
 			{
-				backColour = pixelMap.at(i+1).at(j);
+				backColour = pixelMap.at(j).at(i+1);
 				cout << "\033[38;05;" << backColour.toAnsi() << "m";
 			}
 			cout << "▄";
@@ -185,17 +186,17 @@ void viewport::drawToPPM()
 	outFile << "P3" << endl;
 	outFile << pixelMap.size() << " " << pixelMap.at(0).size() << endl;
 	outFile << 255;
-	for(int i=0; i<pixelMap.size(); ++i)
+	for(int i=0; i<pixelMap.at(0).size(); ++i)
 	{
-		for(int j=0; j<pixelMap.at(i).size(); ++j)
+		for(int j=0; j<pixelMap.size(); ++j)
 		{
 			if(j%5 == 0)
 			{
 				outFile << endl;
 			}
-			outFile << " " << pixelMap.at(i).at(j).R;
-			outFile << " " << pixelMap.at(i).at(j).G;
-			outFile << " " << pixelMap.at(i).at(j).B;
+			outFile << " " << pixelMap.at(j).at(i).R;
+			outFile << " " << pixelMap.at(j).at(i).G;
+			outFile << " " << pixelMap.at(j).at(i).B;
 		}
 		outFile << endl;
 	}
@@ -209,17 +210,17 @@ void viewport::drawToFile(string filename)
 	fprintf(output, "P3\n");
 	fprintf(output, "%i %i\n", pixelMap.size(), pixelMap.at(0).size());
 	fprintf(output, "255");
-	for(int i=0; i<pixelMap.size(); ++i)
+	for(int i=0; i<pixelMap.at(0).size(); ++i)
 	{
-		for(int j=0; j<pixelMap.at(i).size(); ++j)
+		for(int j=0; j<pixelMap.size(); ++j)
 		{
 			if(j%5 == 0)
 			{
 				fprintf(output, "\n");
 			}
-			fprintf(output, " %i", pixelMap.at(i).at(j).R);
-			fprintf(output, " %i", pixelMap.at(i).at(j).G);
-			fprintf(output, " %i", pixelMap.at(i).at(j).B);
+			fprintf(output, " %i", pixelMap.at(j).at(i).R);
+			fprintf(output, " %i", pixelMap.at(j).at(i).G);
+			fprintf(output, " %i", pixelMap.at(j).at(i).B);
 		}
 		fprintf(output, "\n");
 	}

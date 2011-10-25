@@ -99,8 +99,6 @@ int main(int argc, char* argv[])
 			pixelsHigh = w.ws_col;
 			pixelsWide = w.ws_col;
 			cout << "width" << endl;
-			pixelsHigh-=1;
-			pixelsWide-=1;
 			if(!utf)
 			{
 				pixelsHigh/=2;
@@ -112,13 +110,13 @@ int main(int argc, char* argv[])
 			pixelsHigh = w.ws_row;
 			pixelsWide = w.ws_row;
 			cout << "height" << endl;
+			pixelsHigh-=2;
+			pixelsWide-=2;
 			if(utf)
 			{
 				pixelsHigh*=2;
 				pixelsWide*=2;
 			}
-			pixelsHigh-=2;
-			pixelsWide-=2;
 		}
 	}
 
@@ -156,27 +154,27 @@ int main(int argc, char* argv[])
 			}
 			else if(ch == 'h')
 			{
-				double tempMinY = minY-(maxY-minY)/2.0;
-				maxY = maxY-(maxY-minY)/2.0;
-				minY = tempMinY;
-			}
-			else if(ch == 'j')
-			{
-				double tempMinX = minX+(maxX-minX)/2.0;
-				maxX = maxX+(maxX-minX)/2.0;
-				minX = tempMinX;
-			}
-			else if(ch == 'k')
-			{
 				double tempMinX = minX-(maxX-minX)/2.0;
 				maxX = maxX-(maxX-minX)/2.0;
 				minX = tempMinX;
 			}
-			else if(ch == 'l')
+			else if(ch == 'j')
 			{
 				double tempMinY = minY+(maxY-minY)/2.0;
 				maxY = maxY+(maxY-minY)/2.0;
 				minY = tempMinY;
+			}
+			else if(ch == 'k')
+			{
+				double tempMinY = minY-(maxY-minY)/2.0;
+				maxY = maxY-(maxY-minY)/2.0;
+				minY = tempMinY;
+			}
+			else if(ch == 'l')
+			{
+				double tempMinX = minX+(maxX-minX)/2.0;
+				maxX = maxX+(maxX-minX)/2.0;
+				minX = tempMinX;
 			}
 			else if(ch == 'u')
 			{
@@ -214,7 +212,7 @@ int main(int argc, char* argv[])
 			}
 			else if(ch == 'p')
 			{
-				string defaultFilename = saveLocation + "fracviewX" + stringUtils::toString<double>((maxX+minX)/2) + "Y" + stringUtils::toString<double>((maxY+minY)/2) + "." + stringUtils::toString<int>(magnification) + ".png";
+				string defaultFilename = saveLocation + "fracviewX" + stringUtils::toString<double>((maxX+minX)/2) + "Y" + stringUtils::toString<double>((maxY+minY)/2) + "." + stringUtils::toString<double>(magnification) + ".png";
 				string filename;
 				string defaultResX = "800";
 				string resX;
