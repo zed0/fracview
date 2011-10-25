@@ -15,6 +15,7 @@ int main(int argc, char* argv[])
 	double maxY = 2;
 	double stretch_k = 1.0;
 	double theta = 0.0;
+	int iterates = 1000;
 	int antialiasing = 2;
 	double magnification = 1;
 	double colourScale = 128;
@@ -26,7 +27,7 @@ int main(int argc, char* argv[])
 	{
 		if(args.at(i) == "--help")
 		{
-			cout << "Usage:" << args.at(0) << " [--min-x <min x>] [--max-x <max x>] [--min-y <min y>] [--max-y <max y>] [--antialiasing <antialiasing>] [--width <pixels wide>] [--height <pixels high>] [--no-utf] [--k <k value>] [--theta <theta value>] [--dir <save location>]" << endl;
+			cout << "Usage:" << args.at(0) << " [--min-x <min x>] [--max-x <max x>] [--min-y <min y>] [--max-y <max y>] [--antialiasing <antialiasing>] [--width <pixels wide>] [--height <pixels high>] [--no-utf] [--k <k value>] [--theta <theta value>] [--iterates <max iterations>] [--dir <save location>]" << endl;
 			cout << "Keys:" << endl;
 			cout << "h,j,k,l: scroll left, down, up, right." << endl;
 			cout << "u,d: zoom in, out." << endl;
@@ -80,6 +81,10 @@ int main(int argc, char* argv[])
 		{
 			saveLocation = args.at(i+1);
 		}
+		if(args.at(i) == "--iterates" && args.size() > i+1)
+		{
+			iterates = stringUtils::fromString<int>(args.at(i+1));
+		}
 	}
 	termios before, after;
 	tcgetattr (STDIN_FILENO, &before); // fill 'before' with current termios values
@@ -92,7 +97,7 @@ int main(int argc, char* argv[])
 	//cout << "\033[s";
 	while(true)
 	{
-		viewport camera(minX, maxX, minY, maxY, stretch_k, theta, pixelsHigh, pixelsWide, antialiasing, colourScale, colourOffset);
+		viewport camera(minX, maxX, minY, maxY, stretch_k, theta, pixelsHigh, pixelsWide, antialiasing, colourScale, colourOffset, iterates);
 		camera.render();
 		cout << "\033[u";
 		cout << "\033[0;0H";

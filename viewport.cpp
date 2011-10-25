@@ -2,7 +2,7 @@
 
 using namespace std;
 
-viewport::viewport(double minX, double maxX, double minY, double maxY, double stretch_k, double theta, int pixelsHigh, int pixelsWide, int antialias, double colourScale, int colourOffset)
+viewport::viewport(double minX, double maxX, double minY, double maxY, double stretch_k, double theta, int pixelsHigh, int pixelsWide, int antialias, double colourScale, int colourOffset, int iterates)
 {
 	this->pixelsWide = pixelsWide;
 	this->pixelsHigh = pixelsHigh;
@@ -15,6 +15,7 @@ viewport::viewport(double minX, double maxX, double minY, double maxY, double st
 	this->theta = theta;
 	this->colourScale = colourScale;
 	this->colourOffset = colourOffset;
+	this->iterates = iterates;
 	this->pixelMap = vector<vector<colour> >(pixelsHigh, vector<colour>(pixelsWide));
 }
 
@@ -44,11 +45,19 @@ void viewport::render()
 					double zy;
 
 					int itterations = 0;
-					int max = 1000;
+					int max = iterates;
 					double s_theta = sin(theta);
 					double c_theta = cos(theta);
-
-					while(za*za + zb*zb <= 4 && itterations <= max)
+					double L;
+					if (stretch_k >= 1)
+					{
+						L = 2;
+					}
+					else
+					{
+						L = 2/(stretch_k*stretch_k);
+					}
+					while(za*za + zb*zb <= L && itterations <= max)
 					{
 						++itterations;
 						zx = za*(s_theta*s_theta + stretch_k*c_theta*c_theta) + zb*(stretch_k - 1)*s_theta*c_theta;
@@ -64,14 +73,14 @@ void viewport::render()
 
 					}
 					colour currentColour;
-					if(za*za + zb*zb <= 4)
+					if(za*za + zb*zb <= L)
 					{
 						currentColour = colour();
 					}
 					else
 					{
 						//currentColour = colour(255,255,255);
-						itterations *= colourScale;
+						/*itterations *= colourScale;
 						itterations += colourOffset;
 						itterations = itterations%1792;
 						int red = 0;
@@ -112,8 +121,9 @@ void viewport::render()
 							green = itterations - 1536;
 							blue = 255;
 						}
-						currentColour = colour(red, green, blue);
-						//currentColour = colour((double(itterations)/double(max))*255,(double(itterations)/double(max))*255,(double(itterations)/double(max))*255);
+						currentColour = colour(red, green, blue);*/
+						currentColour = colour((double(max-itterations)/double(max))*255,(double(max-itterations)/double(max))*255,(double(max-itterations)/double(max))*255);
+						
 					}
 
 					pixelColour = pixelColour.add(currentColour.product(1.0/(antialias*antialias)));
