@@ -15,24 +15,26 @@ viewport::viewport(double minX, double maxX, double minY, double maxY, double st
 	this->theta = theta;
 	this->colourScale = colourScale;
 	this->colourOffset = colourOffset;
-	this->pixelMap = vector<vector<colour> >(pixelsHigh, vector<colour>(pixelsWide));
+	this->pixelMap = vector<vector<colour> >(pixelsWide, vector<colour>(pixelsHigh));
 }
 
 void viewport::render()
 {
-	for(int i=0; i<pixelsHigh; ++i)
+	double s_theta = sin(theta);
+	double c_theta = cos(theta);
+	for(int i=0; i<pixelsWide; ++i)
 	{
-		for(int j=0; j<pixelsWide; ++j)
+		for(int j=0; j<pixelsHigh; ++j)
 		{
 			colour pixelColour(0,0,0,0);
 			for(int k=0; k<antialias; ++k)
 			{
 				for(int m=0; m<antialias; ++m)
 				{
-					double height = maxX - minX;
-					double x = minX + (i - 0.5+double(antialias)/2 + k/double(antialias))/pixelsHigh * height;
-					double width = maxY - minY;
-					double y = minY + (j - 0.5+double(antialias)/2 + m/double(antialias))/pixelsWide * width;
+					double width = maxX - minX;
+					double x = minX + (i - 0.5+double(antialias)/2 + k/double(antialias))/pixelsWide * width;
+					double height = maxY - minY;
+					double y = minY + (j - 0.5+double(antialias)/2 + m/double(antialias))/pixelsHigh * height;
 					//cout << x << "," << y << ";";
 
 					double ca = x; //real part
@@ -45,8 +47,6 @@ void viewport::render()
 
 					int itterations = 0;
 					int max = 1000;
-					double s_theta = sin(theta);
-					double c_theta = cos(theta);
 
 					while(za*za + zb*zb <= 4 && itterations <= max)
 					{
@@ -73,44 +73,39 @@ void viewport::render()
 						//currentColour = colour(255,255,255);
 						itterations *= colourScale;
 						itterations += colourOffset;
-						itterations = itterations%1792;
+						itterations = itterations%1536;
 						int red = 0;
 						int green = 0;
 						int blue = 0;
 						if(itterations < 256)
 						{
-							red = itterations;
+							red = 255;
+							blue = itterations;
 						}
 						else if(itterations < 512)
 						{
-							red = 255;
-							green = itterations - 256;
+							blue = 255;
+							red = 512 - itterations;
 						}
 						else if(itterations < 768)
 						{
-							green = 255;
-							red = 768 - itterations;
+							blue = 255;
+							green = itterations - 512;
 						}
 						else if(itterations < 1024)
 						{
 							green = 255;
-							blue = itterations - 768;
+							blue = 1024 - itterations;
 						}
 						else if(itterations < 1280)
 						{
-							green = 1280 - itterations;
-							blue = 255;
+							green = 255;
+							red = itterations - 1024;
 						}
 						else if(itterations < 1536)
 						{
-							red = itterations - 1280;
-							blue = 255;
-						}
-						else
-						{
 							red = 255;
-							green = itterations - 1536;
-							blue = 255;
+							green = 1536 - itterations;
 						}
 						currentColour = colour(red, green, blue);
 						//currentColour = colour((double(itterations)/double(max))*255,(double(itterations)/double(max))*255,(double(itterations)/double(max))*255);
@@ -151,7 +146,7 @@ void viewport::drawToUnicode()
 	colour backColour;
 	for(int i=0; i<pixelMap.size()-1; i+=2)
 	{
-		for(int j=0; j<pixelMap.at(i).size(); ++j)
+		for(int j=0; j<pixelMap.at(0).size(); ++j)
 		{
 			//don't output colour codes unless the colour has changed, significantly faster on old terminals.
 			if(pixelMap.at(i).at(j) != foreColour)

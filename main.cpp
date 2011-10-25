@@ -2,13 +2,16 @@
 #include "viewport.h"
 #include "stringUtils.h"
 #include <termios.h>
+#include <sys/ioctl.h>
 
 using namespace std;
 
 int main(int argc, char* argv[])
 {
-	int pixelsHigh = 80;
-	int pixelsWide = 80;
+	bool utf = true;
+	int pixelsHigh = 0;
+	int pixelsWide = 0;
+
 	double minX = -2.5;
 	double maxX = 1.5;
 	double minY = -2;
@@ -19,7 +22,6 @@ int main(int argc, char* argv[])
 	double magnification = 1;
 	double colourScale = 128;
 	int colourOffset = 0;
-	bool utf = true;
 	vector<string> args(argv, argv + argc);
 	string saveLocation = "";
 	for(int i=0; i<args.size(); ++i)
@@ -34,6 +36,7 @@ int main(int argc, char* argv[])
 			cout << "p: print to file, supports any output format supported by imagemagick." << endl;
 			cout << "q: quit." << endl;
 			cout << endl << "UTF characters are on by default as they increase the resolution in both directions by a factor of 2; if you are having problems displaying images then please use --no-utf." << endl;
+			cout << "Detected terminal size: " << pixelsHigh << "x" << pixelsWide << endl;
 			return 0;
 		}
 		if(args.at(i) == "--min-x" && args.size() > i+1)
@@ -81,6 +84,39 @@ int main(int argc, char* argv[])
 			saveLocation = args.at(i+1);
 		}
 	}
+	if(pixelsWide == 0 && pixelsHigh == 0)
+	{
+		struct winsize w;
+		ioctl(0, TIOCGWINSZ, &w);
+		cout << "w:" << w.ws_col << "; h:" << w.ws_row << " ";
+		if((w.ws_col/2)<w.ws_row)
+		{
+			pixelsHigh = w.ws_col;
+			pixelsWide = w.ws_col;
+			cout << "width" << endl;
+			pixelsHigh-=1;
+			pixelsWide-=1;
+			if(!utf)
+			{
+				pixelsHigh/=2;
+				pixelsWide/=2;
+			}
+		}
+		else
+		{
+			pixelsHigh = w.ws_row;
+			pixelsWide = w.ws_row;
+			cout << "height" << endl;
+			if(utf)
+			{
+				pixelsHigh*=2;
+				pixelsWide*=2;
+			}
+			pixelsHigh-=2;
+			pixelsWide-=2;
+		}
+	}
+
 	termios before, after;
 	tcgetattr (STDIN_FILENO, &before); // fill 'before' with current termios values
 	after = before; // make a copy to be modified
@@ -104,11 +140,12 @@ int main(int argc, char* argv[])
 		{
 			camera.drawToTerminal();
 		}
-		cout << "\033[2KMagnification: " << magnification << "; x: " << (minX + maxX)/2 << "; y: " << (minY + maxY)/2 << ";" << endl;
+		cout << "\033[2KMagnification: " << magnification << "; x: " << (minX + maxX)/2 << "; y: " << (minY + maxY)/2 << ";";
 		if(ch=cin.get())
 		{
 			if(ch == 'q')
 			{
+				cout << endl;
 				tcsetattr (STDIN_FILENO, TCSANOW, &before);
 				return 0;
 			}
@@ -172,7 +209,7 @@ int main(int argc, char* argv[])
 			}
 			else if(ch == 'p')
 			{
-				string defaultFilename = saveLocation + "fracview.png";
+				string defaultFilename = saveLocation + "fracviewX" + stringUtils::toString<double>((maxX+minX)/2) + "Y" + stringUtils::toString<double>((maxY+minY)/2) + "." + stringUtils::toString<int>(magnification) + ".png";
 				string filename;
 				string defaultResX = "800";
 				string resX;
