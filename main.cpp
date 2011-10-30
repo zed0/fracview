@@ -34,6 +34,7 @@ int main(int argc, char* argv[])
 			cout << "h,j,k,l: scroll left, down, up, right." << endl;
 			cout << "u,d: zoom in, out." << endl;
 			cout << "n,m: colour scale up, down." << endl;
+			cout << "e,r: iteration count up, down." << endl;
 			cout << "p: print to file, supports any output format supported by imagemagick." << endl;
 			cout << "q: quit." << endl;
 			cout << endl << "UTF characters are on by default as they increase the resolution in both directions by a factor of 2; if you are having problems displaying images then please use --no-utf." << endl;
@@ -143,7 +144,7 @@ int main(int argc, char* argv[])
 		{
 			camera.drawToTerminal();
 		}
-		cout << "\033[2KMagnification: " << magnification << "; x: " << (minX + maxX)/2 << "; y: " << (minY + maxY)/2 << ";";
+		cout << "\033[2KMagnification: " << magnification << "; x: " << (minX + maxX)/2 << "; y: " << (minY + maxY)/2 << "; iterates: " << iterates << ";";
 		if(ch=cin.get())
 		{
 			if(ch == 'q')
@@ -209,6 +210,14 @@ int main(int argc, char* argv[])
 			else if(ch == 'm')
 			{
 				colourScale /= 2;
+			}
+			else if(ch =='e')
+			{
+				iterates *= 2;
+			}
+			else if(ch =='r')
+			{
+				iterates /=2;
 			}
 			else if(ch == 'p')
 			{
